@@ -1,0 +1,263 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Thai+Looped:wght@100;200;300;400;500;600;700&family=Nunito:ital,wght@0,200..1000;1,200..1000&display=swap" rel="stylesheet">
+    <title>Lucky Wheel Game</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: "Nunito", "IBM Plex Sans Thai Looped", sans-serif;
+            background-image: url('./bg.png');
+            background-size: cover;
+            background-position: top center;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            padding-top: 40px;
+            align-items: center;
+        }
+
+        .title {
+            color: #FF5C9D;
+            font-size: 2.5em;
+            font-weight: bold;
+            margin-bottom: 20px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .wheel-container {
+            position: relative;
+            width: min(90vw, 400px);
+            aspect-ratio: 1;
+            margin: 20px;
+            background-color: red;
+            border-radius: 50%;
+        }
+
+        .wheel {
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            position: relative;
+            overflow: hidden;
+            transition: transform 4s cubic-bezier(0.33, 0, 0.15, 1);
+            transform: rotate(0deg);
+            box-shadow: 0 0 30px rgba(0, 0, 0, 0.1);
+            border: 8px solid #FF9ECD;
+        }
+
+        .section {
+            position: absolute;
+            width: 50%;
+            height: 50%;
+            transform-origin: 100% 100%;
+            clip-path: polygon(0 0, 100% 0, 100% 100%);
+            background: var(--color);
+            transform: rotate(calc(var(--offset) * 60deg));
+        }
+
+        .section:nth-child(odd) { --color: #FFF5E9; }
+        .section:nth-child(even) { --color: #fff; }
+
+        .text {
+            position: absolute;
+            color: var(--text-color);
+            font-size: clamp(12px, 3vw, 16px);
+            font-weight: bold;
+            transform: rotate(67deg) translateY(0px);
+            right: 15%;
+            top: 25%;
+            z-index: 2;
+            text-align: center;
+        }
+
+        .section:nth-child(odd) .text { --text-color: #FF5C9D; }
+        .section:nth-child(even) .text { --text-color: #A78BFA; }
+
+        .go-button {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 70px;
+            height: 70px;
+            border-radius: 50%;
+            background: #FF5C9D;
+            border: none;
+            color: white;
+            font-size: 1.2em;
+            font-weight: bold;
+            cursor: pointer;
+            z-index: 10;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+            transition: transform 0.2s;
+        }
+
+        .go-button:active {
+            transform: translate(-50%, -50%) scale(0.95);
+        }
+
+        .pointer {
+            position: absolute;
+            top: 0;
+            left: 50%;
+            transform: translateX(-50%) rotate(180deg);
+            width: 25px;
+            height: 40px;
+            background: #FF9ECD;
+            clip-path: polygon(50% 0%, 100% 100%, 0% 100%);
+            z-index: 20;
+            filter: drop-shadow(0 2px 4px rgba(0,0,0,0.2));
+        }
+
+        .result-popup {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.8);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 100;
+        }
+
+        .result-content {
+            background: white;
+            padding: 2em;
+            border-radius: 20px;
+            text-align: center;
+            max-width: 90%;
+            width: 400px;
+            animation: popIn 0.3s ease-out;
+        }
+
+        @keyframes popIn {
+            0% { transform: scale(0); }
+            80% { transform: scale(1.1); }
+            100% { transform: scale(1); }
+        }
+
+        .prize-amount {
+            font-size: 2.5em;
+            margin: 0.5em 0;
+            color: #FF5C9D;
+            font-weight: bold;
+        }
+
+        .play-again-button {
+            padding: 12px 30px;
+            font-size: 1em;
+            background: #FF5C9D;
+            border: none;
+            border-radius: 25px;
+            color: white;
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+    </style>
+</head>
+<body>
+    <img src="./misologo.png" width="100" />
+    <img src="./badge.png" width="100%" />
+    <div class="wheel-container">
+        <div class="wheel" id="wheel">
+            <div class="section" style="--offset: 0"><span class="text">20฿ OFF</span></div>
+            <div class="section" style="--offset: 1"><span class="text">50฿ OFF</span></div>
+            <div class="section" style="--offset: 2"><span class="text">100฿ OFF</span></div>
+            <div class="section" style="--offset: 3"><span class="text">NO LUCKY</span></div>
+            <div class="section" style="--offset: 4"><span class="text">20฿ OFF</span></div>
+            <div class="section" style="--offset: 5"><span class="text">50฿ OFF</span></div>
+        </div>
+        <button class="go-button" id="goButton">GO</button>
+        <div class="pointer"></div>
+    </div>
+
+    <div class="result-popup" id="resultPopup">
+        <div class="result-content">
+            <h2>🎉 Congratulations! 🎉</h2>
+            <p>You won</p>
+            <div class="prize-amount" id="prizeAmount"></div>
+            <button class="play-again-button" onclick="resetWheel()">Play Again</button>
+        </div>
+    </div>
+
+    <script>
+        const wheel = document.getElementById('wheel');
+        const goButton = document.getElementById('goButton');
+        const resultPopup = document.getElementById('resultPopup');
+        const prizeAmount = document.getElementById('prizeAmount');
+        let isSpinning = false;
+
+        const prizes = [
+            { text: '20฿ OFF', color: '#FF5C9D' },
+            { text: '50฿ OFF', color: '#A78BFA' },
+            { text: '100฿ OFF', color: '#FF5C9D' },
+            { text: 'NO LUCKY', color: '#A78BFA' },
+            { text: '20฿ OFF', color: '#FF5C9D' },
+            { text: '50฿ OFF', color: '#A78BFA' }
+        ];
+
+        goButton.addEventListener('click', () => {
+            if (!isSpinning) spinWheel();
+        });
+
+        function spinWheel() {
+            isSpinning = true;
+            goButton.disabled = true;
+            
+            const randomPrize = Math.floor(Math.random() * prizes.length);
+            const extraRotations = 5;
+            const finalRotation = (extraRotations * 360) + (randomPrize * 60);
+            
+            wheel.style.transform = `rotate(${-finalRotation}deg)`;
+            
+            setTimeout(() => {
+                const pointer = document.querySelector('.pointer');
+                pointer.style.transform = 'translateX(-50%) rotate(180deg) scale(1.2)';
+                pointer.style.transition = 'transform 0.3s ease';
+                
+                setTimeout(() => {
+                    pointer.style.transform = 'translateX(-50%) rotate(180deg)';
+                }, 300);
+
+                showResult(prizes[randomPrize]);
+            }, 6000);
+        }
+
+        function showResult(prize) {
+            prizeAmount.textContent = prize.text;
+            prizeAmount.style.color = prize.color;
+            resultPopup.style.display = 'flex';
+            isSpinning = false;
+        }
+
+        function resetWheel() {
+            wheel.style.transition = 'none';
+            wheel.style.transform = 'rotate(0deg)';
+            resultPopup.style.display = 'none';
+            
+            const pointer = document.querySelector('.pointer');
+            pointer.style.transition = 'none';
+            pointer.style.transform = 'translateX(-50%) rotate(180deg)';
+            
+            setTimeout(() => {
+                wheel.style.transition = 'transform 4s cubic-bezier(0.33, 0, 0.15, 1)';
+                pointer.style.transition = 'transform 0.3s ease';
+                goButton.disabled = false;
+            }, 10);
+        }
+    </script>
+</body>
+</html>
