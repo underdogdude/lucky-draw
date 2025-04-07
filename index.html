@@ -17,7 +17,7 @@
 
         body {
             font-family: "Nunito", "IBM Plex Sans Thai Looped", sans-serif;
-            background-image: url('./bg.png');
+            background-image: url('./bg2.png');
             background-size: cover;
             background-position: top center;
             min-height: 100vh;
@@ -40,11 +40,10 @@
             width: min(90vw, 400px);
             aspect-ratio: 1;
             margin: 20px;
-            background-color: red;
             border-radius: 50%;
         }
 
-        .wheel {
+        /* .wheel {
             width: 100%;
             height: 100%;
             border-radius: 50%;
@@ -52,10 +51,39 @@
             overflow: hidden;
             transition: transform 4s cubic-bezier(0.33, 0, 0.15, 1);
             transform: rotate(0deg);
-            box-shadow: 0 0 30px rgba(0, 0, 0, 0.1);
-            border: 8px solid #FF9ECD;
-        }
+            box-shadow: rgba(0, 0, 0, 0.35) 0px 5px 15px;
+            border: 12px solid #ffdc00;
+        } */
 
+        .wheel::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            border-radius: 50%;
+            box-shadow: inset 0 0 20px rgba(0, 0, 0, 0.25); /* inner shadow */
+            z-index: 2;
+            pointer-events: none;
+        }
+        .wheel {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            transition: transform 4s cubic-bezier(0.33, 0, 0.15, 1);
+            transform: rotate(0deg);
+            border: 12px solid #ffdc00;
+            box-shadow: rgba(0, 0, 0, 0.35) 0px 5px 15px;
+            background: conic-gradient(
+                #f7e9c6 0deg 60deg,
+                #ffc9f4 60deg 120deg,
+                #f7e9c6 120deg 180deg,
+                #ffc9f4 180deg 240deg,
+                #f7e9c6 240deg 300deg,
+                #ffc9f4 300deg 360deg
+            );
+                overflow: hidden;
+            }
+          
         .section {
             position: absolute;
             width: 50%;
@@ -66,40 +94,45 @@
             transform: rotate(calc(var(--offset) * 60deg));
         }
 
-        .section:nth-child(odd) { --color: #FFF5E9; }
-        .section:nth-child(even) { --color: #fff; }
-
+        .section:nth-child(odd) { --color: #f7e9c6; }
+        .section:nth-child(even) { --color: #ffc9f4; }
+        .text-lg { 
+            font-size: 35px;
+            font-weight: 900;
+        }
         .text {
             position: absolute;
             color: var(--text-color);
-            font-size: clamp(12px, 3vw, 16px);
+            font-size: 25px;
             font-weight: bold;
             transform: rotate(67deg) translateY(0px);
-            right: 15%;
-            top: 25%;
+            right: 0;
+            top: 30px;
             z-index: 2;
             text-align: center;
+            line-height: 1;
         }
 
-        .section:nth-child(odd) .text { --text-color: #FF5C9D; }
-        .section:nth-child(even) .text { --text-color: #A78BFA; }
+        .section:nth-child(odd) .text { --text-color: #ff679b; }
+        .section:nth-child(even) .text { --text-color: #d655ff; }
 
         .go-button {
             position: absolute;
             top: 50%;
             left: 50%;
             transform: translate(-50%, -50%);
-            width: 70px;
-            height: 70px;
+            width: 120px;
+            height: 120px;
             border-radius: 50%;
             background: #FF5C9D;
+            background-image: linear-gradient(315deg, #df6fff 0%, #ff56a6 74%);
             border: none;
             color: white;
-            font-size: 1.2em;
+            font-size: 50px;
             font-weight: bold;
             cursor: pointer;
             z-index: 10;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+            box-shadow: rgba(0, 0, 0, 0.35) 0px 5px 15px;
             transition: transform 0.2s;
         }
 
@@ -109,7 +142,7 @@
 
         .pointer {
             position: absolute;
-            top: 0;
+            top: -6px;
             left: 50%;
             transform: translateX(-50%) rotate(180deg);
             width: 25px;
@@ -118,6 +151,8 @@
             clip-path: polygon(50% 0%, 100% 100%, 0% 100%);
             z-index: 20;
             filter: drop-shadow(0 2px 4px rgba(0,0,0,0.2));
+            border: 22px solid #ff4ea4;
+            border-radius: 15px;
         }
 
         .result-popup {
@@ -127,6 +162,7 @@
             width: 100%;
             height: 100%;
             background: rgba(0,0,0,0.8);
+            
             display: none;
             justify-content: center;
             align-items: center;
@@ -134,13 +170,18 @@
         }
 
         .result-content {
-            background: white;
-            padding: 2em;
+            background-image: url(./popup.png);
+            background-size: cover;
             border-radius: 20px;
             text-align: center;
-            max-width: 90%;
+            max-width: 100%;
             width: 400px;
+            height: 340px;
             animation: popIn 0.3s ease-out;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: flex-end;
         }
 
         @keyframes popIn {
@@ -152,7 +193,7 @@
         .prize-amount {
             font-size: 2.5em;
             margin: 0.5em 0;
-            color: #FF5C9D;
+            color: #000;
             font-weight: bold;
         }
 
@@ -170,15 +211,39 @@
 </head>
 <body>
     <img src="./misologo.png" width="100" />
-    <img src="./badge.png" width="100%" style="max-width: 300px;" />
+    <img src="./badge.png" width="100%" style="max-width: 400px; margin-top: 20px;" />
     <div class="wheel-container">
         <div class="wheel" id="wheel">
-            <div class="section" style="--offset: 0"><span class="text">20฿ OFF</span></div>
-            <div class="section" style="--offset: 1"><span class="text">50฿ OFF</span></div>
-            <div class="section" style="--offset: 2"><span class="text">100฿ OFF</span></div>
-            <div class="section" style="--offset: 3"><span class="text">NO LUCKY</span></div>
-            <div class="section" style="--offset: 4"><span class="text">20฿ OFF</span></div>
-            <div class="section" style="--offset: 5"><span class="text">50฿ OFF</span></div>
+            <div class="section" style="--offset: 0">
+                <span class="text">
+                    <span class="text-lg">20฿</span><br/>OFF
+                </span>
+            </div>
+            <div class="section" style="--offset: 1">
+                <span class="text">
+                    <span class="text-lg"> 50฿</span><br/>OFF
+                </span>
+            </div>
+            <div class="section" style="--offset: 2">
+                <span class="text">
+                    <span class="text-lg">100฿</span><br/>OFF
+                </span>
+            </div>
+            <div class="section" style="--offset: 3">
+                <span class="text">
+                    <span class="text-lg">NO</span><br/>LUCKY
+                </span>
+            </div>
+            <div class="section" style="--offset: 4">
+                <span class="text">
+                    <span class="text-lg">20฿</span><br/>OFF
+                </span>
+            </div>
+            <div class="section" style="--offset: 5">
+                <span class="text">
+                    <span class="text-lg"> 50฿</span><br/>OFF
+                </span>
+            </div>
         </div>
         <button class="go-button" id="goButton">GO</button>
         <div class="pointer"></div>
@@ -238,7 +303,6 @@
 
         function showResult(prize) {
             prizeAmount.textContent = prize.text;
-            prizeAmount.style.color = prize.color;
             resultPopup.style.display = 'flex';
             isSpinning = false;
         }
